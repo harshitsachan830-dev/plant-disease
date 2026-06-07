@@ -1,0 +1,11 @@
+Best Upgrade Path
+
+If I were building this for placements and hackathons, I’d do:
+
+1. ✅ Add Top-3 predictions
+2. ✅ Add confidence filtering
+3. ✅ Add Grad-CAM visualization
+4. ✅ Add leaf detection using YOLOv8
+5. ✅ Add disease severity estimation
+6. ✅ Add fertilizer recommendations
+7. ✅ Deploy online

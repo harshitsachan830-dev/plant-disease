@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+uploads/
+reports/
+heatmaps/
+*.pyc
+.env
+.DS_Store
+plant_history.db
+dataset/

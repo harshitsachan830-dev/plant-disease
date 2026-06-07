@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Plant Disease Detector</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="/" class="navbar-brand">
+      <div class="brand-icon">🌿</div>
+      AI Plant Disease Detector
+    </a>
+    <div class="navbar-actions">
+      <button type="button" class="btn-nav btn-nav-ghost" onclick="toggleDarkMode()">
+        🌙 Dark Mode
+      </button>
+      <a href="/history" class="btn-nav btn-nav-outline">📜 Prediction History</a>
+      <a href="/dashboard" class="btn-nav btn-nav-solid">📊 Dashboard</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== PAGE WRAPPER ===== -->
+<div class="page-wrapper">
+
+  <!-- ===== HERO BANNER ===== -->
+  <section class="hero-banner">
+
+      <div class="content">
+
+          <div class="tag">
+              🌿 AI POWERED AGRICULTURE
+          </div>
+
+          <h1>
+              Protect Your Crops<br>
+              With <span class="highlight">AI Intelligence</span>
+          </h1>
+
+          <p class="desc">
+              Upload a leaf image and get instant disease detection,
+              confidence score, severity analysis, treatment recommendations
+              and professional crop health reports.
+          </p>
+
+          <div class="features">
+              <div class="feature">⚡ Instant Analysis</div>
+              <div class="feature">🧠 AI Insights</div>
+              <div class="feature">📊 Health Reports</div>
+              <div class="feature">🌿 Smart Farming</div>
+          </div>
+
+      </div>
+
+  </section>
+
+  <!-- ===== ALERT BANNER ===== -->
+  <div class="alert-banner">
+    <span class="alert-icon">⚠️</span>
+    <span>Upload only <strong>Tomato</strong>, <strong>Potato</strong>, or <strong>Pepper</strong> leaves. Other plants (Mango, Tulsi, Neem, Rose, etc.) may produce incorrect predictions.</span>
+  </div>
+
+  <!-- ===== UPLOAD FORM ===== -->
+  <form method="POST" enctype="multipart/form-data" id="uploadForm">
+    <div class="upload-section" id="dropZone">
+      <div class="upload-inner">
+        <div class="upload-left">
+          <div class="upload-icon-wrap" id="uploadIconWrap">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:#16a34a"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+          </div>
+          <div class="upload-text">
+            <h3>📸 Upload Plant Leaf</h3>
+            <p>Drag &amp; drop a plant leaf image here or click to browse your files</p>
+            <div class="upload-file-row">
+              <label class="btn-file" for="fileInput">Choose File</label>
+              <span class="file-name-label" id="fileName">No file chosen</span>
+              <input type="file" id="fileInput" name="file" accept="image/*" capture="environment" required class="hidden-input">
+            </div>
+            <div class="upload-camera-note">📷 Mobile users can capture leaf images directly using the camera.</div>
+          </div>
+        </div>
+        <div class="upload-right">
+          <button type="submit" class="btn-predict">✨ Predict Disease</button>
+          <span class="btn-predict-sub">Get AI-powered analysis in seconds</span>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <!-- ===== QUICK ACTIONS ===== -->
+  <div class="quick-actions">
+    <a href="/history" class="btn-nav btn-nav-outline">📜 Prediction History</a>
+    <a href="/dashboard" class="btn-nav btn-nav-outline">📊 Analytics Dashboard</a>
+  </div>
+
+  <!-- ===== RESULT SECTION ===== -->
+  {% if prediction %}
+  <div class="result">
+    <div class="result-header">
+      <div class="result-header-badge">🌿 AI Crop Health Report</div>
+      <h2>Detailed Analysis Report</h2>
+      <p>Detailed analysis generated from your uploaded leaf image.</p>
+    </div>
+
+    <div class="comparison-section">
+      <div class="comparison-card">
+        <div class="comparison-card-header">🌿 Original Leaf Image</div>
+        {% if image_path %}<img src="{{ image_path }}" class="comparison-image" alt="Uploaded leaf">{% endif %}
+      </div>
+      <div class="comparison-card">
+        <div class="comparison-card-header">🔥 AI Attention Heatmap</div>
+        {% if heatmap_path %}<img src="{{ heatmap_path }}" class="comparison-image" alt="AI heatmap">{% endif %}
+      </div>
+    </div>
+
+    <div class="stats-section">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-icon">🪴</span>
+          <div class="stat-label">Plant</div>
+          <div class="stat-value">{{ plant_name if plant_name else 'Unknown' }}</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">🦠</span>
+          <div class="stat-label">Disease</div>
+          <div class="stat-value" style="font-size:15px;">{{ disease_name if disease_name else prediction }}</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">📈</span>
+          <div class="stat-label">Confidence</div>
+          <div class="stat-value confidence">{{ confidence }}%</div>
+          <span class="stat-badge">High</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">⚠️</span>
+          <div class="stat-label">Severity</div>
+          <div class="stat-value">{{ severity if severity else 'N/A' }}</div>
+          <span class="stat-badge warning">{{ severity if severity else 'Unknown' }}</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">💚</span>
+          <div class="stat-label">Health Score</div>
+          <div class="stat-value">{{ health_score if health_score else '--' }}/100</div>
+          <span class="stat-badge muted">{{ 'Not Available' if not health_score else 'Scored' }}</span>
+        </div>
+      </div>
+
+      <div><span class="status-row"><span class="status-dot"></span>Status: {{ prediction_status }}</span></div>
+
+      <div class="dashboard-grid">
+        <div class="panel">
+          <div class="panel-title">🏆 Top 3 Predictions</div>
+          {% for item in top_predictions %}
+          <div class="prediction-item">
+            <div class="prediction-rank-row">
+              <span class="rank-badge {% if loop.index == 2 %}silver{% elif loop.index == 3 %}bronze{% endif %}">{{ loop.index }}</span>
+              <span class="prediction-name">{{ item.name }}</span>
+              <span class="prediction-pct">{{ item.confidence }}%</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:{{ item.confidence }}%"></div></div>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="panel">
+          <div class="panel-title">📖 Disease Description</div>
+          <div class="info-body">{{ description }}</div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">💊 Recommended Treatment</div>
+          <div class="info-body">{{ treatment }}</div>
+        </div>
+      </div>
+
+      {% if ai_analysis %}
+      <div class="ai-analysis-card">
+        <div class="ai-analysis-title">🤖 AI Disease Analysis</div>
+        <div class="ai-analysis-content">{{ ai_analysis }}</div>
+      </div>
+      {% endif %}
+    </div>
+
+    {% if report_path %}
+    <div class="download-wrap">
+      <a href="{{ report_path }}" target="_blank" class="btn-download">📄 Download PDF Report</a>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+</div><!-- /page-wrapper -->
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
